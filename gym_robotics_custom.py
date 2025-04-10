@@ -23,6 +23,14 @@ class RoboGymObservationWrapper(ObservationWrapper):
 
     def step(self, action):
         observation, reward, done, truncated, info = self.env.step(action)
+
+        # # 👇 Add this debug line
+        # try:
+        #     ctrl = self.env.env.env.env.sim.data.ctrl
+        #     print("MuJoCo control values:", ctrl)
+        # except:
+        #     print("Couldn't access sim.data.ctrl")
+
         observation = self.process_observation(observation)
         return observation, reward, done, truncated, info
 

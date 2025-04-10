@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class ReplayBuffer():
     def __init__(self, max_size, input_size, n_actions, augment_data=False, augment_rewards=False,
                  expert_data_ratio=0.1, augment_noise_ratio=0.1) -> None:
@@ -42,9 +43,11 @@ class ReplayBuffer():
         max_mem = min(self.mem_ctr, self.mem_size)
 
         if self.expert_data_ratio > 0:
-            expert_data_quantity = int(batch_size* self.expert_data_ratio)
-            random_batch = np.random.choice(max_mem, batch_size-expert_data_quantity)
-            expert_batch = np.random.choice(self.expert_data_cutoff, expert_data_quantity)
+            expert_data_quantity = int(batch_size * self.expert_data_ratio)
+            random_batch = np.random.choice(
+                max_mem, batch_size-expert_data_quantity)
+            expert_batch = np.random.choice(
+                self.expert_data_cutoff, expert_data_quantity)
             batch = np.concatenate((random_batch, expert_batch))
         else:
             batch = np.random.choice(max_mem, batch_size)
@@ -56,8 +59,10 @@ class ReplayBuffer():
         dones = self.terminal_memory[batch]
 
         if self.augment_data:
-            state_noise_std = self.augment_noise_ratio * np.mean(np.abs(states))
-            action_noise_std = self.augment_noise_ratio * np.mean(np.abs(states))
+            state_noise_std = self.augment_noise_ratio * \
+                np.mean(np.abs(states))
+            action_noise_std = self.augment_noise_ratio * \
+                np.mean(np.abs(states))
 
             states = states + np.random.normal(0, state_noise_std)
             actions = actions + np.random.normal(0, action_noise_std)
@@ -67,6 +72,7 @@ class ReplayBuffer():
 
         return states, actions, rewards, next_states, dones
 
+    # Basically using saving and loading to use expert data
     def save_to_csv(self, filename):
         np.savez(filename,
                  state=self.state_memory[:self.mem_ctr],
